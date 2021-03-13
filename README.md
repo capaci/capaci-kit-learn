@@ -2,7 +2,7 @@
 
 This repository consists of reimplementations of some machine learning algorithms with api's similar to those of [scikit-learn](https://scikit-learn.org).
 
-It was created for the purposes of studying some topics such as machine learning, [numpy](https://numpy.org/), [scikit-learn](https://scikit-learn.org), documentation in python projects, automated tests with [pytest](https://docs.pytest.org/en/stable/), dependency management with [Poetry](https : //python-poetry.org/), among others.
+It was created for the purposes of studying some topics such as machine learning, [numpy](https://numpy.org/), [scikit-learn](https://scikit-learn.org), documentation in python projects, automated tests with [pytest](https://docs.pytest.org/en/stable/), dependency management with [Poetry](https://python-poetry.org/), among others.
 
 ## Install Poetry
 
