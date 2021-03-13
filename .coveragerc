@@ -1,0 +1,6 @@
+[run]
+omit = **/migrations/*,**/venv/*,**/.cache/**
+
+[coverage:report]
+skip_empty = true
+omit = **/migrations/*,**/test*,**/.cache/**
