@@ -10,3 +10,11 @@ class BaseException(Exception):
 
 class InvalidMetric(BaseException):
     default_message: str = 'Invalid metric passed as argument'
+
+
+class InvalidDimension(BaseException):
+    default_message: str = 'Argument has invalid dimension'
+
+
+class IncompatibleShape(BaseException):
+    default_message: str = 'Arguments have incompatible shape'

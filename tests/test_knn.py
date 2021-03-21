@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 
-from src.exceptions import InvalidMetric
+from src.exceptions import IncompatibleShape, InvalidDimension, InvalidMetric
 from src.knn import KNN
 
 
@@ -27,6 +27,33 @@ def test_parameters_when_fitting_must_have_equal_values_but_being_different_inst
     assert id(knn.X) != id(X)
     assert (y == knn.y).all()
     assert id(knn.y) != id(y)
+
+
+def test_x_parameter_with_dimension_different_from_2_should_raise_exception_when_fitting():
+    X = np.array([1, 2, 3, 4])
+    y = np.array([5, 6])
+    knn = KNN()
+
+    with pytest.raises(InvalidDimension):
+        knn.fit(X, y)
+
+
+def test_y_parameter_with_dimension_different_from_1_should_raise_exception_when_fitting():
+    X = np.array([[1, 2], [3, 4]])
+    y = np.array([[5], [6]])
+    knn = KNN()
+
+    with pytest.raises(InvalidDimension):
+        knn.fit(X, y)
+
+
+def test_y_parameter_with_length_different_of_number_of_rows_in_x_should_raise_exception_when_fitting():
+    X = np.array([[1, 2], [3, 4]])
+    y = np.array([5, 6, 7])
+    knn = KNN()
+
+    with pytest.raises(IncompatibleShape):
+        knn.fit(X, y)
 
 
 def test_prediction_with_euclidean_distance():
@@ -110,3 +137,27 @@ def test_using_iris_dataset():
     acc = round(accuracy_score(y_test, y_pred), 2)
 
     assert acc == 1.0
+
+
+def test_x_parameter_with_dimension_different_from_2_should_raise_exception_when_predicting():
+    X = np.array([[1, 1], [1000, 1000], [2, 2], [980, 1099], [3, 3], [1100, 1010]])
+    y = np.array([1, 2, 1, 2, 1, 2])
+    X_test = np.array([1, 5, 999, 999, 15, 15, 1500, 1500, 50, 50])
+
+    knn = KNN()
+    knn.fit(X, y)
+
+    with pytest.raises(InvalidDimension):
+        knn.predict(X_test)
+
+
+def test_x_parameter_with_different_number_of_columns_from_training_x_should_raise_exception_when_predicting():
+    X = np.array([[1, 1], [1000, 1000], [2, 2], [980, 1099], [3, 3], [1100, 1010]])
+    y = np.array([1, 2, 1, 2, 1, 2])
+    X_test = np.array([[1, 5, 5], [999, 999, 999], [15, 15, 15], [1500, 1500, 1500], [50, 50, 50]])
+
+    knn = KNN()
+    knn.fit(X, y)
+
+    with pytest.raises(IncompatibleShape):
+        knn.predict(X_test)

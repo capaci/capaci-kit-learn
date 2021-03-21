@@ -37,3 +37,9 @@ poetry install
 ```sh
 poetry run pytest
 ```
+
+## Running linter
+
+```sh
+poetry run flake8
+```

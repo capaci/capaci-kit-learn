@@ -4,7 +4,7 @@ from typing import Callable
 import numpy as np
 import numpy.typing as npt
 
-from .exceptions import InvalidMetric
+from .exceptions import IncompatibleShape, InvalidDimension, InvalidMetric
 
 
 class KNN():
@@ -20,10 +20,29 @@ class KNN():
             raise InvalidMetric
 
     def fit(self, X: np.ndarray, y: np.ndarray) -> None:
+        if X.ndim != 2:
+            raise InvalidDimension('X must be a matrix with dimension equal to 2')
+
+        if y.ndim != 1:
+            raise InvalidDimension('y must be a matrix with dimension equal to 1')
+
+        y_len = len(y)
+        x_rows, _ = X.shape
+        if y_len != x_rows:
+            raise IncompatibleShape('X and y does not have compatible shapes. X has {x_rows} and y has length = {y_len}')
+
         self.X = X.copy()
         self.y = y.copy()
 
     def predict(self, X_test: np.ndarray) -> np.ndarray:
+        if X_test.ndim != 2:
+            raise InvalidDimension('X_test must be a matrix with dimension equal to 2')
+
+        _, x_test_cols = X_test.shape
+        _, n_attributes = self.X.shape
+        if x_test_cols != n_attributes:
+            raise IncompatibleShape('X_test must have the same number of attributes as X used for training')
+
         y_predicted = []
         for xi_test in X_test:
             distances = self.metric_function(xi_test)
