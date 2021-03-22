@@ -27,6 +27,7 @@ def test_parameters_when_fitting_must_have_equal_values_but_being_different_inst
     assert id(knn.X) != id(X)
     assert (y == knn.y).all()
     assert id(knn.y) != id(y)
+    assert len(knn.classes) == 2
 
 
 def test_x_parameter_with_dimension_different_from_2_should_raise_exception_when_fitting():
@@ -89,7 +90,7 @@ def test_invalid_metric_should_raise_exception():
         KNN(metric=metric)
 
 
-def test_compare_with_scikit_knn_when_using_euclidean_distance():
+def test_compare_with_sklearn_knn_when_using_euclidean_distance():
     rng = np.random.RandomState(42)
     metric = 'euclidean'
     X, y = make_classification(n_samples=700, random_state=rng)
@@ -106,7 +107,7 @@ def test_compare_with_scikit_knn_when_using_euclidean_distance():
     assert np.all(y_predicted == sk_result)
 
 
-def test_compare_with_scikit_knn_when_using_manhattan_distance():
+def test_compare_with_sklearn_knn_when_using_manhattan_distance():
     rng = np.random.RandomState(42)
     metric = 'manhattan'
     X, y = make_classification(n_samples=700, random_state=rng)
@@ -161,3 +162,46 @@ def test_x_parameter_with_different_number_of_columns_from_training_x_should_rai
 
     with pytest.raises(IncompatibleShape):
         knn.predict(X_test)
+
+
+def test_x_parameter_with_dimension_different_from_2_should_raise_exception_when_predicting_proba():
+    X = np.array([[1, 1], [1000, 1000], [2, 2], [980, 1099], [3, 3], [1100, 1010]])
+    y = np.array([1, 2, 1, 2, 1, 2])
+    X_test = np.array([1, 5, 999, 999, 15, 15, 1500, 1500, 50, 50])
+
+    knn = KNN()
+    knn.fit(X, y)
+
+    with pytest.raises(InvalidDimension):
+        knn.predict_proba(X_test)
+
+
+def test_x_parameter_with_different_number_of_columns_from_training_x_should_raise_exception_when_predicting_proba():
+    X = np.array([[1, 1], [1000, 1000], [2, 2], [980, 1099], [3, 3], [1100, 1010]])
+    y = np.array([1, 2, 1, 2, 1, 2])
+    X_test = np.array([[1, 5, 5], [999, 999, 999], [15, 15, 15], [1500, 1500, 1500], [50, 50, 50]])
+
+    knn = KNN()
+    knn.fit(X, y)
+
+    with pytest.raises(IncompatibleShape):
+        knn.predict_proba(X_test)
+
+
+def test_knn_predict_probabilities_comparing_with_sklearn_knn():
+    digits = datasets.load_digits()
+    metric = 'euclidean'
+    k = 11
+    X = digits.data
+    y = digits.target
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    sk_knn = KNeighborsClassifier(n_neighbors=k, metric=metric)
+    sk_knn.fit(X_train, y_train)
+    sk_result = sk_knn.predict_proba(X_test)
+
+    model = KNN(k=k, metric=metric)
+    model.fit(X_train, y_train)
+    result = model.predict_proba(X_test)
+
+    assert np.all(result == sk_result)
